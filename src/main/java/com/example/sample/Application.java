@@ -33,7 +33,7 @@ public class Application {
         @GetMapping("/profile")
         @PreAuthorize("hasAuthority('SCOPE_profile')")
         public Mono<Rendering> userDetails(OAuth2AuthenticationToken authentication) {
-            Map<String, Object> userAttributes = authentication.getPrincipal().getAttributes();
+            final Map<String, Object> userAttributes = authentication.getPrincipal().getAttributes();
             return Mono.just(Rendering.view("userProfile").modelAttribute("details", userAttributes).build());
         }
     }
