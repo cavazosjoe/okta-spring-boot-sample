@@ -21,8 +21,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfiguration {
 
     @Bean
-    public SecurityWebFilterChain securityWebFilterChain(
-            ServerHttpSecurity http, ReactiveClientRegistrationRepository clientRegistrationRepository) {
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, ReactiveClientRegistrationRepository clientRegistrationRepository) {
         return http
             .authorizeExchange((authz) ->
                 authz.pathMatchers("/").permitAll()
@@ -30,8 +29,8 @@ public class SecurityConfiguration {
             )
             .anonymous(withDefaults())
             .oauth2Login(oAuth2LoginSpec -> {
-                // Enable PKCE support.
-                final var resolver = new DefaultServerOAuth2AuthorizationRequestResolver(clientRegistrationRepository);
+                // Enable PKCE support
+                DefaultServerOAuth2AuthorizationRequestResolver resolver = new DefaultServerOAuth2AuthorizationRequestResolver(clientRegistrationRepository);
                 resolver.setAuthorizationRequestCustomizer(OAuth2AuthorizationRequestCustomizers.withPkce());
                 oAuth2LoginSpec.authorizationRequestResolver(resolver);
             })
@@ -47,13 +46,12 @@ public class SecurityConfiguration {
         return ReactiveJwtDecoders.fromOidcIssuerLocation(issuerUri);
     }
 
-    private ServerLogoutSuccessHandler oidcLogoutSuccessHandler(
-            ReactiveClientRegistrationRepository clientRegistrationRepository) {
-        final var oidcLogoutSuccessHandler =
+    private ServerLogoutSuccessHandler oidcLogoutSuccessHandler(ReactiveClientRegistrationRepository clientRegistrationRepository) {
+        OidcClientInitiatedServerLogoutSuccessHandler oidcLogoutSuccessHandler =
             new OidcClientInitiatedServerLogoutSuccessHandler(clientRegistrationRepository);
 
         // Sets the location that the End-User's User Agent will be redirected to
-        // after the logout has been performed at the Provider.
+        // after the logout has been performed at the Provider
         oidcLogoutSuccessHandler.setPostLogoutRedirectUri("{baseUrl}");
 
         return oidcLogoutSuccessHandler;
